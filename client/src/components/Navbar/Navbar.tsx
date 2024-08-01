@@ -9,7 +9,6 @@ const Navbar: React.FC<IProps> = (props) => {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
       <div className="container-fluid">
         <div className="navbar-brand text-info">ToDo 2.0</div>
-        <div className="navbar text-primary">{props.username}</div>
         <button
           className="navbar-toggler"
           type="button"
@@ -40,20 +39,22 @@ const Navbar: React.FC<IProps> = (props) => {
             </li>
           </ul>
 
-          <ul className="navbar-nav ms-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/register">
-                Register
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/login">
-                Login
-              </Link>
-            </li>
-          </ul>
+          {props.username === "" &&
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <Link className="nav-link" to="/register">
+                  Register
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/login">
+                  Login
+                </Link>
+              </li>
+            </ul>}
         </div>
-      </div>
+        {props.username !== "" && <div className="text-info">Welcome, {props.username}</div>
+        }      </div>
     </nav>
   );
 };
