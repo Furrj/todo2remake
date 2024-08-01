@@ -2,6 +2,7 @@ package todos
 
 import (
 	"fmt"
+	"furrj/todo_2_remake/internal/dbHandler"
 	"furrj/todo_2_remake/internal/types"
 	"net/http"
 
@@ -9,11 +10,10 @@ import (
 )
 
 // UpdateTodo accepts a todo object and updates the todo
-// TODO: accept username and update specific user's todo
-func UpdateTodo() gin.HandlerFunc {
+func UpdateTodo(db *dbHandler.DBHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// init payload to allow binding
-		var payload types.Todo
+		var payload types.RequestUpdateTodo
 		// init response object as invalid
 		response := types.ResponseValid{
 			Valid: false,
@@ -21,15 +21,18 @@ func UpdateTodo() gin.HandlerFunc {
 
 		// bind request body to payload
 		if err := ctx.BindJSON(&payload); err != nil {
-			fmt.Printf("Error binding payload: %+v\n", err)
+			fmt.Printf("error binding payload: %+v\n", err)
 			ctx.JSON(http.StatusInternalServerError, response)
 			return
 		}
-		fmt.Printf("Login Payload: %+v\n", payload)
+		fmt.Printf("update payload: %+v\n", payload)
 
-		// update todo in slice
-		// TODO: update in db
-		updateTodo(TestTodos, payload)
+		// update todo in db
+		if err := db.UpdateTodoByUserID(payload.UserID, payload.Todo); err != nil {
+			fmt.Printf("error updating: %+v\n", err)
+			ctx.JSON(http.StatusInternalServerError, response)
+			return
+		}
 
 		// set response to valid and send
 		response.Valid = true
@@ -40,7 +43,7 @@ func UpdateTodo() gin.HandlerFunc {
 // updateTodo updates todo with same ID in slice
 func updateTodo(todos []types.Todo, todo types.Todo) {
 	for i := range todos {
-		if todos[i].ID == todo.ID {
+		if todos[i].TodoID == todo.TodoID {
 			todos[i] = todo
 		}
 	}

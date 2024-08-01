@@ -34,7 +34,7 @@ func Register(db *dbHandler.DBHandler) gin.HandlerFunc {
 		// if username exists
 		if userData.UserID != 0 {
 			fmt.Printf("username %s already exists\n", payload.Username)
-			ctx.JSON(http.StatusOK, response)
+			ctx.JSON(http.StatusBadRequest, response)
 			return
 		}
 

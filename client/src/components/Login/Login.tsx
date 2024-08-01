@@ -38,7 +38,6 @@ const Login: React.FC<IProps> = (props) => {
 
       props.setUserData({ username: userFormInfo.username, user_id: res.data.user_id })
       navigate("/");
-
     } catch (err) {
       console.log(err)
       setIsError(true);

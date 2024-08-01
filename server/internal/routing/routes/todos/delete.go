@@ -2,22 +2,18 @@ package todos
 
 import (
 	"fmt"
+	"furrj/todo_2_remake/internal/dbHandler"
 	"furrj/todo_2_remake/internal/types"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-type deletePayload struct {
-	ID uint `json:"id"`
-}
-
 // DeleteTodo deletes a todo by id
-// TODO: accept username and delete specific user's todo
-func DeleteTodo() gin.HandlerFunc {
+func DeleteTodo(db *dbHandler.DBHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// init payload object to allow binding
-		var payload deletePayload
+		var payload types.RequestDeleteTodo
 		// init response object as invalid
 		response := types.ResponseValid{
 			Valid: false,
@@ -29,11 +25,14 @@ func DeleteTodo() gin.HandlerFunc {
 			ctx.JSON(http.StatusInternalServerError, response)
 			return
 		}
-		fmt.Printf("Delete ID: %d\n", payload.ID)
+		fmt.Printf("delete payload: %v\n", payload)
 
-		// remove todo from slice by ID
-		// TODO: remove from db
-		TestTodos = filter(TestTodos, payload.ID)
+		// delete from db
+		if err := db.DeleteTodoByUserID(payload.UserID, payload.TodoID); err != nil {
+			fmt.Printf("error deleting todo: %+v\n", err)
+			ctx.JSON(http.StatusInternalServerError, response)
+			return
+		}
 
 		// set response to valid and send
 		response.Valid = true
@@ -46,7 +45,7 @@ func filter(todos []types.Todo, id uint) []types.Todo {
 	var filtered []types.Todo
 
 	for _, todo := range todos {
-		if todo.ID != id {
+		if todo.TodoID != id {
 			filtered = append(filtered, todo)
 		}
 	}

@@ -1,8 +1,9 @@
 import styles from "./Register.module.scss";
 import { useState } from "react";
-import { T_USER_DATA, type T_APIRESULT_VALID, type T_FORMINFO_REGISTER } from "../../types";
+import { T_APIRESULT_REGISTER, T_USER_DATA, type T_FORMINFO_REGISTER } from "../../types";
 import { apiRequestRegister } from "../../methods/requests";
 import { AxiosResponse } from "axios";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {
   setUserData: React.Dispatch<React.SetStateAction<T_USER_DATA>>
@@ -14,8 +15,11 @@ const Register: React.FC<IProps> = (props) => {
     firstPassword: "",
     secondPassword: "",
   });
+  const [isError, setIsError] = useState<boolean>(false);
 
   function inputHandler(e: React.ChangeEvent<HTMLInputElement>): void {
+    isError && setIsError(false);
+
     setUserFormInfo((userFormInfo: T_FORMINFO_REGISTER) => {
       return {
         ...userFormInfo,
@@ -24,11 +28,19 @@ const Register: React.FC<IProps> = (props) => {
     });
   }
 
+  const navigate = useNavigate();
   async function register(): Promise<void> {
-    const res: AxiosResponse<T_APIRESULT_VALID> = await apiRequestRegister(
-      userFormInfo
-    );
-    console.log(`register valid: ${res.data.valid}`);
+    try {
+      const res: AxiosResponse<T_APIRESULT_REGISTER> = await apiRequestRegister(
+        userFormInfo
+      );
+
+      props.setUserData({ username: userFormInfo.username, user_id: res.data.user_id })
+      navigate("/");
+    } catch (err) {
+      console.log(err)
+      setIsError(true);
+    }
   }
 
   return (
@@ -77,6 +89,9 @@ const Register: React.FC<IProps> = (props) => {
         <button className="btn btn-info me-3" onClick={register}>
           Register
         </button>
+        {isError &&
+          <div>Error occured, please try again</div>
+        }
       </div>
     </div>
   );

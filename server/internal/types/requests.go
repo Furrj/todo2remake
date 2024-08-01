@@ -19,3 +19,13 @@ type RequestAddTodo struct {
 	Content string `json:"content"`
 	UserID  UserID `json:"user_id"`
 }
+
+type RequestUpdateTodo struct {
+	Todo
+	UserID UserID `json:"user_id"`
+}
+
+type RequestDeleteTodo struct {
+	TodoID uint   `json:"todo_id"`
+	UserID UserID `json:"user_id"`
+}

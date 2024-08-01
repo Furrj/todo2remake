@@ -9,16 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var TestTodos = []types.Todo{
-	{ID: 5, Title: "test5", Content: "test5"},
-	{ID: 2, Title: "test2", Content: "test2"},
-	{ID: 3, Title: "test3", Content: "test3"},
-	{ID: 1, Title: "test", Content: "test"},
-	{ID: 4, Title: "test4", Content: "test4"},
-}
-
 // GetTodos quicksorts todos by id and returns all todos
-// TODO: accept username and get specific user's todos
 func GetTodos(db *dbHandler.DBHandler) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var payload types.RequestGetTodo
@@ -41,7 +32,7 @@ func GetTodos(db *dbHandler.DBHandler) gin.HandlerFunc {
 		}
 
 		// call quicksortTodosByID to sort todos
-		TestTodos = quickSortTodosByID(todos)
+		todos = quickSortTodosByID(todos)
 		fmt.Printf("%+v\n", todos)
 
 		// send response
@@ -70,11 +61,11 @@ func quicksort(todos []types.Todo, low, high int) {
 
 // partition partitions slice of todos in place
 func partition(todos []types.Todo, low, high int) int {
-	pivot := todos[high].ID
+	pivot := todos[high].TodoID
 	i := low - 1
 
 	for j := low; j < high; j++ {
-		if todos[j].ID < pivot {
+		if todos[j].TodoID < pivot {
 			i++
 			todos[i], todos[j] = todos[j], todos[i]
 		}
